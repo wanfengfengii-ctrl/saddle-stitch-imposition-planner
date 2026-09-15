@@ -1,0 +1,44 @@
+# 骑马钉拼版推演台 —— 容器编排
+#
+# 只包含两类服务：
+#   web     —— 仅承载构建后的静态 Web（nginx），宿主端口由 WEB_PORT 覆盖
+#   verify  —— 一次性验收服务（Vitest + 类型检查/构建 + Playwright），退出码即验收结果
+#
+# 用法：
+#   WEB_PORT=9000 docker compose up --build -d web   # 默认 WEB_PORT=8080
+#   docker compose run --build --rm verify           # 跑一次性验收
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    image: saddle-stitch-web:latest
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    restart: unless-stopped
+
+  verify:
+    image: mcr.microsoft.com/playwright:v1.63.0-noble
+    working_dir: /work
+    user: root
+    depends_on:
+      web:
+        condition: service_healthy
+    volumes:
+      - .:/work
+      - /work/node_modules
+    environment:
+      # 指向静态 Web 容器；Playwright 配置检测到非本地地址时不再自起预览服务
+      PLAYWRIGHT_BASE_URL: http://web:80
+      CI: "1"
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        npm ci
+        npm run typecheck
+        npm run test:unit
+        npm run build
+        npx playwright test

@@ -1,0 +1,31 @@
+{
+  "name": "saddle-stitch-imposition",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "骑马钉小册子拼版推演台（纯前端，TypeScript + React + Vite）",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run",
+    "test:watch": "vitest",
+    "e2e": "npm run build && playwright test",
+    "test": "npm run test:unit && npm run e2e"
+  },
+  "dependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.6",
+    "vitest": "^3.2.7"
+  }
+}
